@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+<body> 
+    <div class="mt-1 py-2 container border border-dark rounded">
+        <p class="my-auto">{{onlineUserCount}} users in room:</p>
+    </div>
+        <div class="mt-1 py-2 container border border-dark rounded">
+            <p class="my-auto">{{onlineUserData}} hoho users in room:</p>
+            {{#each onlineUserData}}
+            <p style="color: {{color}};" class="my-auto">{{name}} </p>
+            {{/each}}
+    </div>
+    
+</body>
+<script type="text/javascript" src="socket.io/client-dist/socket.io.js"></script>
+<script>
+  var socket = io();
+  var messages = document.getElementById('messages');
+  var form = document.getElementById('form');
+  var input = document.getElementById('input');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (input.value) {
+      socket.emit('chat message', input.value);
+      socket.emit('type status', "");
+      input.placeholder = "";
+      input.value = '';
+    }
+  });
+
+function typeStatus() {
+    socket.emit('type status', "a user is typing...");
+}
+
+function nottypeStatus() {
+    socket.emit('type status', "")
+}
+
+socket.on('type status', function(status) {
+    input.placeholder = status;
+});
+
+  socket.on('chat message', function(msg) {
+    var item = document.createElement('li');
+    item.textContent = msg;
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+</script>
+</html>
